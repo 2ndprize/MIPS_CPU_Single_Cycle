@@ -2,16 +2,16 @@
 
 module single_cycle_cpu_tb;
 
-	reg clk, reset;
+	reg external_clk, reset;
 	reg expesrc0, expsrc1, expsrc2;
 	wire [10:0] cnt_i, cnt_r, cnt_j, cnt_clk;
 	wire [31:0] hex;
 
 	// 1clk = 10ns
-	always #5 clk = ~clk;
+	always #5 external_clk = ~external_clk;
 
 	initial begin 
-		clk = 0;
+		external_clk = 0;
 		reset = 1;
 		expesrc0 = 0; 
 		expsrc1 = 0;
@@ -19,11 +19,11 @@ module single_cycle_cpu_tb;
 
 		#20 reset = 0;
 
-		#16450 $finish;
+		#17000 $finish;
 	end
 
 	single_cycle_cpu my_cpu(
-		.clk(clk),
+		.external_clk(external_clk),
 		.reset(reset),
 		.expesrc0(expesrc0),
 		.expsrc1(expsrc1),

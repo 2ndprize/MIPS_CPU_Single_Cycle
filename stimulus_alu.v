@@ -12,7 +12,7 @@ module alu_tb;
 
   	integer i;
 
-  // DUT
+  	// DUT
   	alu dut (
     	.x(x),
     	.y(y),
@@ -26,8 +26,8 @@ module alu_tb;
 
   	initial begin
     	// Test values
-    	x = 32'h0000_0004;  // Change as needed
-    	y = 32'h0000_0002;  // Change as needed
+    	x = 32'h00000004;
+    	y = 32'h00000002;
 
     	$display("Starting ALU Test\n");
 

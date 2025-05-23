@@ -25,15 +25,15 @@ module cp0(
 	assign expsrc[0] = (blocksrc[0]) ? 0 : expsrc0;
 	assign expsrc[1] = (blocksrc[1]) ? 0 : expsrc1;
 	assign expsrc[2] = (blocksrc[2]) ? 0 : expsrc2;
-	assign expclick = |expsrc & ~expblock;
+	assign expclick = (|expsrc) & (~expblock);
 
-	assign hasexp = clk & out_q1;
-	
 	counter_bit cnt1 (
 		.clk(expclick),
 		.clr(out_q2),
 		.q(out_q1)
 	);
+
+	assign hasexp = clk & out_q1;
 
 	counter_bit cnt2 (
 		.clk(hasexp),
@@ -53,7 +53,7 @@ module cp0(
 	wire [31:0] cause_in;
 	wire [31:0] cause_out;
 
-	assign enable_exregwrite = enable & ~exregwrite;
+	assign enable_exregwrite = enable & (~exregwrite);
 	
 	demux_1to4 u_demux(
 		.data(1'b1),
@@ -67,7 +67,7 @@ module cp0(
 	assign jud_status = enable_exregwrite & dmx_status;
 	assign jud_block = enable_exregwrite & dmx_block;
 
-	assign epc_input = (~hasexp) ? d_in : pc_in;
+	assign epc_in = (~hasexp) ? d_in : pc_in;
 	
 	cp0_reg epc (
 		.data(epc_in),
@@ -101,6 +101,7 @@ module cp0(
 	cp0_reg cause (
 		.data(cause_in),
 		.clk(expclick),
+		.clr(reset),
 		.outdata(cause_out)
 	);
 	
@@ -125,9 +126,9 @@ module counter_bit (
 
     	always @(posedge clk or posedge clr) begin
         	if (clr)
-			q <= 1'b0;
+			q = 1'b0;
         	else 
-			q <= 1'b1;
+			q = 1'b1;
         end
 
 endmodule

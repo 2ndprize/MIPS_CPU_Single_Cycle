@@ -1,4 +1,4 @@
-module syscall_control (
+module syscall_decoder (
     	input wire [31:0] v0,
 	input wire [31:0] a0,
     	input wire enable,

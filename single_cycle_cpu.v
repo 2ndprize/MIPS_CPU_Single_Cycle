@@ -1,5 +1,5 @@
 module single_cycle_cpu(
-	input clk, reset,
+	input external_clk, reset,
 	input expesrc0, expsrc1, expsrc2,
 	output [10:0] cnt_i, cnt_r, cnt_j, cnt_clk,
 	output [31:0] hex
@@ -51,6 +51,11 @@ module single_cycle_cpu(
 
 	// Syscall Decoder
 	wire halt;
+
+
+	// Generate internal clk
+	wire clk;
+	assign clk = (halt) ? 1'b1 : external_clk;
 
 
 	// Program Counter
@@ -182,7 +187,7 @@ module single_cycle_cpu(
 
 
 	// Syscall Decoder
-	syscall_control my_sysctrl (.v0(reg1_out),
+	syscall_decoder my_sysdecl (.v0(reg1_out),
 				.a0(reg2_out),
 				.enable(issyscall),
 				.clk(clk),

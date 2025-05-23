@@ -1,80 +1,94 @@
-
 `timescale 1ns / 1ps
 
 module ctr_unit_tb;
 
-    reg [5:0] op;
-    reg [5:0] func;
+  	reg [5:0] op;
+    	reg [5:0] func;
 
-    wire memread, memwrite, alusrc, jump, memtoreg, branch, regdst, regwrite;
-    wire bneorbeq, isjal, zeroextend, readrs, readrt;
-    wire issyscall, isjr, isshamt, iscop0;
-    wire [3:0] aluop;
+    	wire memread, memwrite, alusrc, jump, memtoreg, branch, regdst, regwrite;
+    	wire bneorbeq, isjal, zeroextend, readrs, readrt;
+    	wire issyscall, isjr, isshamt, iscop0;
+    	wire [3:0] aluop;
 
-    // DUT instantiation
-    ctr_unit dut (
-        .op(op),
-        .func(func),
-        .memread(memread),
-        .memwrite(memwrite),
-        .alusrc(alusrc),
-        .jump(jump),
-        .memtoreg(memtoreg),
-        .branch(branch),
-        .regdst(regdst),
-        .regwrite(regwrite),
-        .bneorbeq(bneorbeq),
-        .isjal(isjal),
-        .zeroextend(zeroextend),
-        .readrs(readrs),
-        .readrt(readrt),
-        .issyscall(issyscall),
-        .isjr(isjr),
-        .isshamt(isshamt),
-        .iscop0(iscop0),
-        .aluop(aluop)
-    );
+  	ctr_unit dut (.op(op),
+        	.func(func),
+        	.memread(memread),
+        	.memwrite(memwrite),
+        	.alusrc(alusrc),
+        	.jump(jump),
+        	.memtoreg(memtoreg),
+        	.branch(branch),
+        	.regdst(regdst),
+        	.regwrite(regwrite),
+        	.bneorbeq(bneorbeq),
+        	.isjal(isjal),
+        	.zeroextend(zeroextend),
+        	.readrs(readrs),
+        	.readrt(readrt),
+        	.issyscall(issyscall),
+        	.isjr(isjr),
+        	.isshamt(isshamt),
+        	.iscop0(iscop0),
+        	.aluop(aluop)
+    	);
 
-    initial begin
-        $display("Time | OP     FUNC   | regwrite aluop isjr issyscall");
-        $monitor("%4t | %b %b |    %b       %b    %b     %b", 
-                 $time, op, func, regwrite, aluop, isjr, issyscall);
 
-        // R-type instruction: ADD
-        op = 6'b000000; func = 6'b100000; #10;
+  	initial begin
+  		$display("Time |    op    func  | regwrite regdst memread memwrite memtoreg alusrc branch bne/beq jump isjal zeroext readrs readrt issyscall isjr isshamt iscop0 aluop");
+  		$monitor("%4dns | %b %b |     %b       %b       %b       %b        %b       %b      %b      %b      %b     %b      %b      %b      %b        %b      %b     %b      %b   %b",
+           		$time, op, func, regwrite, regdst, memread, memwrite, memtoreg, alusrc,
+           		branch, bneorbeq, jump, isjal, zeroextend, readrs, readrt,
+           		issyscall, isjr, isshamt, iscop0, aluop);
 
-        // R-type instruction: JR
-        op = 6'b000000; func = 6'b001000; #10;
+    		// lw (op = 100011)
+    		#10 op = 6'b100011; func = 6'bxxxxxx;
 
-        // R-type instruction: SYSCALL
-        op = 6'b000000; func = 6'b001100; #10;
+    		// sw (op = 101011)
+    		#10 op = 6'b101011; func = 6'bxxxxxx;
+	
+    		// add (R-type, func = 100000)
+    		#10 op = 6'b000000; func = 6'b100000;
 
-        // I-type instruction: LW
-        op = 6'b100011; func = 6'b000000; #10;
+    		// sub (func = 100010)
+    		#10 func = 6'b100010;
 
-        // I-type instruction: SW
-        op = 6'b101011; func = 6'b000000; #10;
+    		// and (func = 100100)
+    		#10 func = 6'b100100;
 
-        // I-type instruction: ADDI
-        op = 6'b001000; func = 6'b000000; #10;
+    		// or (func = 100101)
+    		#10 func = 6'b100101;
 
-        // J-type instruction: J
-        op = 6'b000010; func = 6'b000000; #10;
+    		// jr (func = 001000)
+    		#10 func = 6'b001000;
 
-        // J-type instruction: JAL
-        op = 6'b000011; func = 6'b000000; #10;
+    		// syscall (func = 001100)
+    		#10 func = 6'b001100;
 
-        // Branch instruction: BEQ
-        op = 6'b000100; func = 6'b000000; #10;
+    		// sll (func = 000000)
+    		#10 func = 6'b000000;
 
-        // Branch instruction: BNE
-        op = 6'b000101; func = 6'b000000; #10;
+    		// beq (op = 000100)
+    		#10 op = 6'b000100; func = 6'bxxxxxx;
 
-        // COP0 instruction
-        op = 6'b010000; func = 6'b000000; #10;
+    		// bne (op = 000101)
+    		#10 op = 6'b000101;
 
-        // Finish simulation
-        $finish;
-    end
+    		// j (op = 000010)
+    		#10 op = 6'b000010;
+
+    		// jal (op = 000011)
+    		#10 op = 6'b000011;
+
+    		// andi (op = 001100)
+    		#10 op = 6'b001100;
+
+    		// ori (op = 001101)
+    		#10 op = 6'b001101;
+
+    		// mfc0 / mtc0 (cop0, op = 010000)
+    		#10 op = 6'b010000;
+	
+    		#10 $finish;
+  	end
 
 endmodule
