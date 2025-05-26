@@ -1,6 +1,6 @@
 module single_cycle_cpu(
 	input external_clk, reset,
-	input expesrc0, expsrc1, expsrc2,
+	input expsrc0, expsrc1, expsrc2,
 	output [10:0] cnt_i, cnt_r, cnt_j, cnt_clk,
 	output [31:0] hex
 );
